@@ -144,6 +144,10 @@ if __name__ == '__main__':
         chrome_driver.quit()
 ```
 
+## Selentric Class Objects
+
+The 3 class objects selentric uses are documented below.
+
 ## `Locator`
 ```
 class Locator(builtins.object):
@@ -177,7 +181,7 @@ class Locator(builtins.object):
         search_input.send_keys('ello poppet')
 ```
 
-### Locator Methods:
+### `Locator` Methods:
 ```
 __init__(self, by: selenium.webdriver.common.by.By = 'id', locator: str = '', name='', parent=None, multiple=False, driver=None):
 
@@ -263,7 +267,7 @@ Data and other attributes defined here:
     driver: selenium.webdriver.chrome.webdriver.WebDriver = None
 ```
 
-## PageTemplateMatcher
+## `PageTemplateMatcher`
 ```
 class PageTemplateMatcher(builtins.object):
   PageTemplateMatcher(driver: selenium.webdriver.chrome.webdriver.WebDriver = None):
@@ -293,7 +297,7 @@ class PageTemplateMatcher(builtins.object):
     Note that this example is somewhat incomplete, as you wouldn't normally intermix
     the template code with the automation code.
 ```
-### PageTemplateMatcher Methods:
+### `PageTemplateMatcher` Methods:
 ```
 __getattr__(self, name: str):
 
@@ -451,7 +455,7 @@ Data and other attributes defined here:
     driver: selenium.webdriver.chrome.webdriver.WebDriver = None
 ```
 
-## Page
+## `Page`
 ```
 class Page(builtins.object):
  
@@ -466,7 +470,7 @@ class Page(builtins.object):
     objects by calling the `Page.locator` method.  This will give you the
     `Locator`, but no lookups in the DOM will be performed by selenium.
 ```
-### Page Methods:
+### `Page` Methods:
 ```
 __init__(self, template_matcher: selentric.PageTemplateMatcher):
 
