@@ -7,29 +7,6 @@ from time import sleep, time
 import random
 
 
-def fail_gracefully(*excs, debug=False):
-    """
-    Decorate function to fail gracefully when any of the given exceptions
-    are raised during the execution of the decorated function.
-
-    This decorator takes an arbitrary amount of `Exception`s as input
-    arguments.
-
-    :param excs:
-    :return:
-    """
-    def decorator(function):
-        def wrapper(*args, **kwargs):
-            try:
-                return function(*args, **kwargs)
-            except excs as e:
-                if debug:
-                    print(f"Failed gracefully - {e}")
-                return None
-        return wrapper
-    return decorator
-
-
 class Locator(object):
     """
     This object stores the information needed to look up a webpage
@@ -92,16 +69,6 @@ class Locator(object):
         :return:
         """
         Locator.driver = driver
-
-    @fail_gracefully(NoSuchElementException, debug=True)
-    def find_gracefully(self):
-        """
-        Attempt to locate the web page element, but fail gracefully and return None
-        instead of raising an exception.
-
-        :return:
-        """
-        self.find()
 
     def find(self):
         """
