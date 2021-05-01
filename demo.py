@@ -1,9 +1,7 @@
 from selenium.webdriver import Chrome
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
-from page_templates import wikipedia
-from automation import Locator
+from selentric.page_templates import wikipedia
+from selentric import Locator
 
 
 def main(driver):
@@ -16,6 +14,9 @@ def main(driver):
     wiki_search.wait_until_ready()
     wiki_search.search_input.send_keys('Selentric')
     wiki_search.search_button.click()
+
+    wiki_search.wait_until_ready()
+    wiki_search.login_link.click()
 
     wiki_login.wait_for_match()
     wiki_login.wait_until_ready()
