@@ -15,11 +15,6 @@ def fail_gracefully(*excs, debug=False):
     This decorator takes an arbitrary amount of `Exception`s as input
     arguments.
 
-    Example:
-        @fail_gracefully(NoSuchElementException)
-        def google_search_input(driver):
-            return driver.find_element_by_name("q")
-
     :param excs:
     :return:
     """
