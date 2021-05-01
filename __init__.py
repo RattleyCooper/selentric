@@ -425,6 +425,13 @@ class Page(object):
         print('Page matches!')
         return self
 
+    def wait_for_no_match(self, poll_frequency=.1):
+        print(f'Waiting for page to not match {self}')
+        while self.matches(timeout=0):
+            sleep(poll_frequency)
+        print('Page doesn\'t match!')
+        return self
+
     def wait_until_ready(self, timeout=60, poll_frequency=.5):
         """
         Wait until the document readyState == complete
