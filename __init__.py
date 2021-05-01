@@ -64,14 +64,14 @@ class Locator(object):
         :param multiple:
         :param driver:
         """
-        self.name = name
-        self.element = None
-        self.found = False
         self.by = by
         self.locator = locator
+        self.name = name
         self.parent = parent
         self.multiple = multiple
         self.driver = driver
+        self.element = None
+        self.found = False
         self.results = []
 
     def __getattr__(self, name):
