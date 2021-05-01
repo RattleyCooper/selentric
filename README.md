@@ -2,13 +2,14 @@
 
 Selentric is the successor to [selenext](https://github.com/Wykleph/selenext).  Selenext is great, but it's clunkier than 
 it needs to be.  The overall idea is the same; create a template/model of a web site so we can separate the code that 
-controls the automation, and the code that finds the web elements.
+controls the automation, and the code that finds the web elements.  Selenium has a `Page` object but this expands on that
+a little bit and brings a little bit more to the table.
 
-There will also be tools available for logging the source code of the web pages you need to automate.  Once you have the
-source files you can run them through a tool to generate `Page`/`PageTemplateMatcher`/`Locator` objects using unique 
-class names, tag names, ids, names, etc.  These tools will require `BeautifulSoup4`.  They are not complete yet.  Once
-it's done, I'm fairly certain it will make the process of setting up unique page templates a lot quicker, but like I said,
-it's not done yet.
+In the future there will also be tools available for logging the source code of the web pages you need to automate.  Once 
+you have the source files you can run them through a tool to generate `Page`/`PageTemplateMatcher`/`Locator` objects using 
+unique class names, tag names, ids, names, etc.  These tools will require `BeautifulSoup4`.  They are not complete yet.  
+Once it's done, I'm fairly certain it will make the process of setting up unique page templates a lot quicker, but like 
+I said, it's not done yet.
 
 ### Install
 
