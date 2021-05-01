@@ -39,7 +39,7 @@ class Locator(object):
     """
     driver = None
 
-    def __init__(self, by: By = By.ID, locator: str = '', name='', parent=None, multiple=False, driver=None):
+    def __init__(self, by: By = By.ID, locator: str = '', name: str = '', parent=None, multiple=False, driver=None):
         """
         Initialize the Locator.  Store the information about how the locator should
         locate web elements.
@@ -386,6 +386,7 @@ class PageTemplateMatcher(object):
         setattr(self, name, element)
         element.name = name
         self.locators[name] = element
+        return self
 
     def matches(self, timeout=.01, debug=False, poll_frequency=.1):
         """
@@ -558,6 +559,7 @@ class Page(object):
             lambda driver: driver.execute_script('return document.readyState') == 'complete'
         )
         print('DOM ready.')
+        return self
 
     def wait_for(self, element: Locator, expected_condition, timeout=5, poll_frequency=.1):
         """
@@ -576,4 +578,5 @@ class Page(object):
         WebDriverWait(self.matcher.driver, timeout if timeout else 0.1, poll_frequency).until(
             expected_condition((element.by, element.locator))
         )
+        return self
 
