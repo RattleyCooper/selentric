@@ -331,7 +331,9 @@ class PageTemplateMatcher(object):
         If all expected conditions are met, the method returns True.
 
         :param timeout:
-        :return:
+        :param debug:
+        :param poll_frequency:
+        :return bool:
         """
 
         for wait in self.expected_conditions:
