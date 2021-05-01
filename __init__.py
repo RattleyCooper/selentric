@@ -19,10 +19,12 @@ class Locator(object):
 
     When an element is located successfully, a copy of the selenium
     element object is stored and you can call any of it's methods
-    using this Locator object.
+    using this Locator object.  Access the stored web element in
+    the `element` attribute, or multiple results in the `results`
+    attribute.
 
     Basic Example:
-        search_input = Locator(by=By.NAME, locator='q', name='search-input')
+        search_input = Locator(by=By.NAME, locator='q', name='search_input')
 
         # We do not have to call `find`/call the object itself.
         # As soon as you try to access a method that doesn't
@@ -40,9 +42,20 @@ class Locator(object):
     def __init__(self, by: By = By.ID, locator: str = '', name='', parent=None, multiple=False, driver=None):
         """
         Initialize the Locator.  Store the information about how the locator should
-        locate web elements.  You can pass in a web driver using the `driver` kwarg.
-        You can also set the web driver for all Locators by setting Locator.driver
-        as a static variable.
+        locate web elements.
+
+        Make sure to use the `name` kwarg to set the name of the Locator if you want
+        to access the Locator/web element as an attribute on the `Page` object.
+
+        You can set a parent Locator with the `parent` kwarg.  Before the web element
+        is located, the parent Locator will locate the parent element, then the parent
+        web element will be used to locate the child element.
+
+        You can also get a list of web elements that match the given Locator by setting
+        the `multiple` kwarg to `True`
+
+        You can pass in a web driver using the `driver` kwarg.  You can set the web
+        driver for all Locators by setting `Locator.driver` as a static variable.
 
         :param by:
         :param locator:
@@ -62,6 +75,28 @@ class Locator(object):
         self.results = []
 
     def __getattr__(self, name):
+        """
+        Called when trying to access an attribute that does not exist on the Locator object.
+
+        In order to allow quick/easy access to the selenium web element's methods, we check
+        if there is a web element that has already been found.  If there is no found element
+        then we attempt to find it.  If we can find the web element we attempt to return
+        the attribute from the web element object.
+
+        This is what allows this kind of syntax:
+
+            wiki_search.search_input.send_keys("selentric!")
+
+        Otherwise we would have to write our code like this:
+
+            wiki_search.search_input().send_keys("selentric!")
+
+        or even worse, like this:
+
+            wiki_search.search_input.find().send_keys("selentric!")
+
+        :param name:
+        """
         if self.element is None:
             result = self.find()
             if result is None:
@@ -69,9 +104,20 @@ class Locator(object):
         return getattr(self.element, name)
 
     def __call__(self, *args, **kwargs):
+        """
+        If the class instance is called like a function, attempt to locate the web element
+        described by the Locator.
+
+        :return:
+        """
         return self.find()
 
     def __bool__(self):
+        """
+        Check if the web element has been found when compared as a boolean.
+
+        :return:
+        """
         return self.found
 
     @staticmethod
@@ -86,22 +132,22 @@ class Locator(object):
 
     def find(self):
         """
-        Attempt to locate the web page element.
+        Attempt to locate the web page element described by the Locator.
 
         :return:
         """
         driver = Locator.driver if self.driver is None else self.driver
-        if self.parent is not None:
+        if self.parent is not None:  # Parent locators
             parent = self.parent()
-            if not self.multiple:
+            if not self.multiple:  # Parent with one result.
                 result = parent.find_element(self.by, self.locator)
-            else:
+            else:  # Multiple results using parent
                 result = parent.find_elements(self.by, self.locator)
                 self.results = result
-        else:
-            if not self.multiple:
+        else:  # No parents
+            if not self.multiple:  # Single result, no parent
                 result = driver.find_element(self.by, self.locator)
-            else:
+            else:  # Multiple results, no parent
                 result = driver.find_elements(self.by, self.locator)
                 self.results = result
 
