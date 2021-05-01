@@ -167,7 +167,7 @@ class PageTemplateMatcher(object):
     be evaluated.  If any of the conditions are not met then the object
     returns False, otherwise it returns True.
 
-    Example:
+    Basic Example:
         driver.get('https://google.com/')
         input_locator = Locator('search-input', driver, by=By.NAME, locator='q')
 
@@ -178,16 +178,38 @@ class PageTemplateMatcher(object):
 
         if google_matcher.matches():
             input_locator().send_keys('Selenium is awesome!')
+
+    Note that this example is somewhat incomplete, as you wouldn't normally intermix
+    the template code with the automation code.
     """
+    driver = None
+
     def __init__(self, driver=None):
         self.driver = driver
         self.expected_conditions = []
         self.locators = {}
 
     def set_driver(self, driver):
-        self.driver = driver
+        """
+        Set the driver as a static attribute so that all PageTemplateMatchers use the same
+        web driver instance.
+
+        :param driver:
+        :return:
+        """
+        PageTemplateMatcher.driver = driver
+        return self
 
     def __getattr__(self, name):
+        """
+        When an attribute is accessed that does not exist, we'll check to see if the
+        template has a locator by the given attribute name.  If it does it will do
+        all the checks to see if the element exists and return that element if it
+        does exist.
+
+        :param name:
+        :return:
+        """
         if name not in self.locators:
             raise AttributeError(f'No attribute "{name}" exists on object and no key of "{name}" exists in locator dictionary.')
         if self.locators[name].element is None or not self.locators[name]:
@@ -198,8 +220,8 @@ class PageTemplateMatcher(object):
 
     def match_url(self, url: str):
         """
-        Tell the template matcher it should match the given URL
-        with the current URL.
+        Tell the template matcher it should match the given URL with the current
+        URL in the web driver.
 
         :param url:
         :return:
@@ -219,6 +241,10 @@ class PageTemplateMatcher(object):
         return self
 
     def _set_locator(self, element: Locator):
+        """
+        Create an attribute on this object with a name matching the given
+        Locator's name, with the value being the Locator itself.
+        """
         new_id = uuid.uuid4().hex
         element_name = element.name if element.name else new_id
         setattr(self, element_name, element)
@@ -227,7 +253,7 @@ class PageTemplateMatcher(object):
     def match_presence(self, element: Locator):
         """
         Tell the template matcher it should be able to find a web page
-        element with the given `Locator`
+        element with the given `Locator`.
 
         :param element:
         :return:
@@ -250,6 +276,14 @@ class PageTemplateMatcher(object):
         return self
 
     def match_invisibility(self, element: Locator):
+        """
+        Tell the template matcher it should NOT be able to find a web
+        page element with the given Locator, or that web page element
+        is invisible to the user.
+
+        :param element:
+        :return:
+        """
         self._set_locator(element)
         self.expected_conditions.append((EC.invisibility_of_element_located, [(element.by, element.locator)]))
         return self
@@ -319,14 +353,36 @@ class PageTemplateMatcher(object):
         return self
 
     def match_alert_present(self):
+        """
+        Tell the template matcher that an alert box should be open on the screen.
+
+        :return:
+        """
         self.expected_conditions.append((EC.alert_is_present, []))
         return self
 
     def add_locator(self, element: Locator):
+        """
+        Tell the template matcher that it should store a locator, but won't use
+        that locator for template matching.  The locator will be accessible as
+        an attribute on this object using it's set name.
+
+        :param element:
+        :return:
+        """
         self._set_locator(element)
         return self
 
     def add_locator_by_name(self, element: Locator, name: str):
+        """
+        Tell the template matcher that it should store a locator, but won't use
+        that locator for template matching.  The locator will be accessible as
+        an attribute on this object using the name provided in the method call.
+
+        :param element:
+        :param name:
+        :return:
+        """
         setattr(self, name, element)
         element.name = name
         self.locators[name] = element
@@ -364,10 +420,31 @@ class PageTemplateMatcher(object):
 
 
 class Page(object):
+    """
+    This object provides a multitude of helper methods that are great for your
+    controller code.  You give it a `PageTemplateMatcher` and then you can do
+    things like wait for the web page to match the given template matcher, or
+    locate the selenium window handle that matches the given template.
+
+    You can directly access attributes of the given `PageTemplateMatcher` and
+    in turn, get access to all of it's `Locator` objects.  If you need to
+    use a `Locator` directly, you can bypass the automatic nature of selentric
+    objects by calling the `Page.locator` method.  This will give you the
+    `Locator`, but no lookups in the DOM will be performed by selenium.
+    """
     def __init__(self, template_matcher: PageTemplateMatcher):
+        """
+        There must be a PageTemplateMatcher for the Page object to use.
+        """
         self.matcher: PageTemplateMatcher = template_matcher
 
     def __getattr__(self, name):
+        """
+        This enabled the automatic access to Locators held in the PageTemplateMatcher
+
+        :param name:
+        :return:
+        """
         if name not in self.matcher.locators:
             raise AttributeError(f'No attribute "{name}" exists on object and no key of "{name}" exists in matchers locator dictionary.')
         if self.matcher.locators[name].element is None or not self.matcher.locators[name]:
@@ -378,13 +455,19 @@ class Page(object):
 
     @staticmethod
     def randomly_wait(low, high):
+        """
+        Sleep for a random amount of time between the low and high values provided.
+
+        :param low:
+        :param high:
+        """
         sleep(random.randint(low, high))
 
     def locate_window(self, timeout=-1):
         """
         Locate the correct window by cycling through the window handles and
-        checking running the `PageTemplateMatcher` to confirm the correct
-        window handle is currently selected.
+        running the `PageTemplateMatcher` to confirm the correct window
+        handle is currently selected.
 
         Set `timeout` to something other than -1 if you don't want it
         to attempt to locate the window forever.
@@ -415,7 +498,8 @@ class Page(object):
 
     def locator(self, locator_name: str):
         """
-        Get the `Locator` instance using the `Locator`'s lookup name.
+        Get the `Locator` instance using the `Locator`'s lookup name, without
+        calling `find` or trying to find the web element.
 
         :param locator_name:
         :return:
@@ -423,6 +507,15 @@ class Page(object):
         return self.matcher.locators[locator_name]
 
     def wait_for_match(self, poll_frequency=.1, timeout=-1):
+        """
+        Wait until the current window handle's web page matches the template
+        defined in the PageTemplateMatcher that this object uses.
+
+        Set timeout to something other than -1 or it will wait forever.
+
+        :param poll_frequency:
+        :param timeout:
+        """
         print(f'Waiting for page to match {self.__class__.__name__}')
         t1 = time()
         while not self.matches(timeout=0):
@@ -433,6 +526,15 @@ class Page(object):
         return self
 
     def wait_for_no_match(self, poll_frequency=.1, timeout=-1):
+        """
+        Wait until the current window handle's web page DOES NOT match the
+        template defined in the PageTemplateMatcher that this object uses.
+
+        Set timeout to something other than -1 or it will wait forever.
+
+        :param poll_frequency:
+        :param timeout:
+        """
         print(f'Waiting for page to no longer match {self.__class__.__name__}')
         t1 = time()
         while self.matches(timeout=0):
@@ -459,7 +561,10 @@ class Page(object):
 
     def wait_for(self, element: Locator, expected_condition, timeout=5, poll_frequency=.1):
         """
-        Wait for an element to match an expected condition.
+        Wait for an element to match an expected condition.  This method is "under construction".
+        Selenium already provides an api to code to for creating custom expected conditions,
+        so it's probably better to create custom expected conditions for common scenarios
+        and add them to the template matcher, etc.
 
         :param element:
         :param expected_condition:
