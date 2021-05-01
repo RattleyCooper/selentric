@@ -20,9 +20,8 @@ def main(driver):
 
     wiki_login.wait_for_match()
     wiki_login.wait_until_ready()
-    wiki_login.username_input.send_keys('doodoobutt')
-    wiki_login.password_input.send_keys('teeheehee')
-
+    wiki_login.username_input.send_keys('bobabooeybobabooeybobabooey')
+    wiki_login.password_input.send_keys('notapassword')
 
     sleep(6)
 
