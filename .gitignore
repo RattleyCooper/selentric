@@ -5,3 +5,4 @@ page-logger.py
 common.py
 __pycache*
 examples*
+demo.py
