@@ -3,7 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import uuid
-from time import sleep
+from time import sleep, time
 import random
 
 
@@ -385,19 +385,28 @@ class Page(object):
     def randomly_wait(low, high):
         sleep(random.randint(low, high))
 
-    def locate_window(self):
+    def locate_window(self, timeout=-1):
         """
         Locate the correct window by cycling through the window handles and
         checking running the `PageTemplateMatcher` to confirm the correct
         window handle is currently selected.
 
+        Set `timeout` to something other than -1 if you don't want it
+        to attempt to locate the window forever.
+
+        :timeout:
         :return:
         """
-        for wh in self.matcher.driver.window_handles:
-            self.matcher.driver.switch_to.window(wh)
-            if self.matches(debug=True):
-                return
-        raise Exception(f'Cannot located window handle for {self}')
+        t1 = time()
+        print(f'Trying to locate window that matches {self.__class__.__name__}')
+        while True:
+            for wh in self.matcher.driver.window_handles:
+                self.matcher.driver.switch_to.window(wh)
+                if self.matches(debug=True):
+                    print(f'Found window for {self.__class__.__name__}')
+                    return
+                if -1 < timeout < time() - t1:
+                    raise Exception(f'Cannot located window handle matching {self.__class__.__name__} in {timeout} seconds.')
 
     def matches(self, debug=False, timeout=.01):
         """
@@ -418,18 +427,24 @@ class Page(object):
         """
         return self.matcher.locators[locator_name]
 
-    def wait_for_match(self, poll_frequency=.1):
-        print(f'Waiting for page to match {self}')
+    def wait_for_match(self, poll_frequency=.1, timeout=-1):
+        print(f'Waiting for page to match {self.__class__.__name__}')
+        t1 = time()
         while not self.matches(timeout=0):
             sleep(poll_frequency)
-        print('Page matches!')
+            if -1 < timeout < time() - t1:
+                raise TimeoutException(f'No match for {self.__class__.__name__} found in {timeout} seconds.')
+        print(f'Page matches {self.__class__.__name__}!')
         return self
 
-    def wait_for_no_match(self, poll_frequency=.1):
-        print(f'Waiting for page to not match {self}')
+    def wait_for_no_match(self, poll_frequency=.1, timeout=-1):
+        print(f'Waiting for page to no longer match {self.__class__.__name__}')
+        t1 = time()
         while self.matches(timeout=0):
             sleep(poll_frequency)
-        print('Page doesn\'t match!')
+            if -1 < timeout < time() - t1:
+                raise TimeoutException(f"Page continued to match {self.__class__.__name__} for {timeout} seconds.")
+        print(f'Page no longer matches {self.__class__.__name__}.')
         return self
 
     def wait_until_ready(self, timeout=60, poll_frequency=.5):
@@ -445,6 +460,7 @@ class Page(object):
         WebDriverWait(self.matcher.driver, timeout, poll_frequency).until(
             lambda driver: driver.execute_script('return document.readyState') == 'complete'
         )
+        print('DOM ready.')
 
     def wait_for(self, element: Locator, expected_condition, timeout=5, poll_frequency=.1):
         """
