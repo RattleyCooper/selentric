@@ -37,7 +37,20 @@ class Locator(object):
     """
     driver = None
 
-    def __init__(self, by: By = By.ID, locator: str = '', name='', parent=None, multiple=False):
+    def __init__(self, by: By = By.ID, locator: str = '', name='', parent=None, multiple=False, driver=None):
+        """
+        Initialize the Locator.  Store the information about how the locator should
+        locate web elements.  You can pass in a web driver using the `driver` kwarg.
+        You can also set the web driver for all Locators by setting Locator.driver
+        as a static variable.
+
+        :param by:
+        :param locator:
+        :param name:
+        :param parent:
+        :param multiple:
+        :param driver:
+        """
         self.name = name
         self.element = None
         self.found = False
@@ -45,6 +58,7 @@ class Locator(object):
         self.locator = locator
         self.parent = parent
         self.multiple = multiple
+        self.driver = driver
         self.results = []
 
     def __getattr__(self, name):
@@ -76,6 +90,7 @@ class Locator(object):
 
         :return:
         """
+        driver = Locator.driver if self.driver is None else self.driver
         if self.parent is not None:
             parent = self.parent()
             if not self.multiple:
@@ -85,9 +100,9 @@ class Locator(object):
                 self.results = result
         else:
             if not self.multiple:
-                result = Locator.driver.find_element(self.by, self.locator)
+                result = driver.find_element(self.by, self.locator)
             else:
-                result = Locator.driver.find_elements(self.by, self.locator)
+                result = driver.find_elements(self.by, self.locator)
                 self.results = result
 
         self.element = result if result else None
