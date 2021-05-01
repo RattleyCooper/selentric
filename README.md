@@ -6,12 +6,14 @@ controls the automation, and the code that finds the web elements.
 
 There will also be tools available for logging the source code of the web pages you need to automate.  Once you have the
 source files you can run them through a tool to generate `Page`/`PageTemplateMatcher`/`Locator` objects using unique 
-class names, tag names, ids, names, etc.  These tools will require `BeautifulSoup4`.
+class names, tag names, ids, names, etc.  These tools will require `BeautifulSoup4`.  They are not complete yet.  Once
+it's done, I'm fairly certain it will make the process of setting up unique page templates a lot quicker, but like I said,
+it's not done yet.
 
 ### Install
 
 This package is brand new and there is not an official way to install the package yet.  Download the .zip and install 
-manually.  The only dependency is the `selenium` bindings for python.
+manually, or sync it with git.  The only dependency is the `selenium` bindings for python.
 
 ### Usage
 
@@ -20,9 +22,9 @@ we are going to be working with, and the template code should not be intermingle
 This template will hold all the information needed to locate the web elements we need to automate.  Once we have defined 
 a template to use, we can give that template to the `Page` object, which provides helper functions for writing controllers
 while cutting down on overly-verbose selenium code.  To do this we need to import the `PageTemplateMatcher`,`Locator`, 
-`Page`, and `By` objects.  The example below is fairly comprehensive and is documented pretty well, although it does not
-show all of the available methods. It shows how to set up a custom `Page` object with a `PageTemplateMatcher`.  The 
-controller portion of the code is in the `if __name__ == "__main__":` block.
+`Page`, and `By` objects.  The example below is fairly comprehensive and is documented pretty well, although this example
+does not show all of the available methods. It shows how to set up a custom `Page` object with a `PageTemplateMatcher`.  
+The controller portion of the code is in the `if __name__ == "__main__":` block.
 
 ```python
 # Selentric imports `By` from selenium, so it's the same object.
@@ -141,6 +143,6 @@ if __name__ == '__main__':
         chrome_driver.quit()
 ```
 
-### Full Documentation Soon
+### Full Class Documentation Soon
 
 
