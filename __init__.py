@@ -110,41 +110,6 @@ class Locator(object):
         return self.element
 
 
-class url_matches(object):
-    """
-    This is a custom `expected_condition` for selenium's `WebDriverWait`
-    object that allows you to wait until a URL matches the
-    `driver.current_url`.
-
-    Returns a copy of the webdriver used in the `WebDriverWait` object
-    on success and False if unsuccessful.
-    """
-    def __init__(self, url):
-        self.url = url
-
-    def __call__(self, driver):
-        result = driver.current_url == self.url
-        return driver if result else False
-
-
-class url_contains(object):
-    """
-    This is a custom `expected_condition` for selenium's `WebDriverWait`
-    object that allows you to wait until the `driver.current_url`
-    contains specific text.
-
-    Returns a copy of the webdriver used in the `WebDriverWait` object
-    on success and False if unsuccessful.
-    """
-    def __init__(self, text):
-        self.text = text
-
-    def __call__(self, driver):
-
-        result = self.text in driver.current_url
-        return driver if result else False
-
-
 class PageTemplateMatcher(object):
     """
     Use this object to verify the state of a web page by checking that
