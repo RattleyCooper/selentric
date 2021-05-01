@@ -4,3 +4,4 @@ page-logger.py
 .idea*
 common.py
 __pycache*
+examples*
