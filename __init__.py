@@ -543,7 +543,7 @@ class Page(object):
         """
         sleep(random.randint(low, high))
 
-    def locate_window(self, timeout=-1):
+    def locate_window(self, timeout=-1, poll_frequency=.5):
         """
         Locate the correct window by cycling through the window handles and
         running the `PageTemplateMatcher` to confirm the correct window
@@ -565,6 +565,7 @@ class Page(object):
                     return
                 if -1 < timeout < time() - t1:
                     raise Exception(f'Cannot located window handle matching {self.__class__.__name__} in {timeout} seconds.')
+                sleep(poll_frequency)
 
     def matches(self, debug=False, timeout=.01):
         """
