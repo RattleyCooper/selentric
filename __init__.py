@@ -1,5 +1,5 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import uuid
@@ -64,7 +64,7 @@ class Locator(object):
     """
     driver = None
 
-    def __init__(self, by: By = By.ID, locator: str = '', name: str = '', parent=None, multiple=False, driver=None):
+    def __init__(self, by: By = By.ID, locator: str = '', name: str = '', parent=None, multiple=False, driver=None, selector=False):
         """
         Initialize the Locator.  Store the information about how the locator should
         locate web elements.
@@ -82,6 +82,14 @@ class Locator(object):
         You can pass in a web driver using the `driver` kwarg.  You can set the web
         driver for all Locators by setting `Locator.driver` as a static variable.
 
+        You can use the `selector` kwarg to tell the Locator to wrap the resulting
+        selenium web element in a selenium `Select` object.  These are used for
+        interacting with dropdown inputs.  This enabled the `select_by_index`,
+        `select_by_visible_text`, and `select_by_value`, and other methods
+        provided by the `Select` object.
+
+        https://selenium-python.readthedocs.io/navigating.html
+
         :param by:
         :param locator:
         :param name:
@@ -98,6 +106,7 @@ class Locator(object):
         self.element = None
         self.found = False
         self.results = []
+        self.selector = selector
 
     def __getattr__(self, name):
         """
@@ -179,6 +188,9 @@ class Locator(object):
             else:  # Multiple results, no parent
                 result = driver.find_elements(self.by, self.locator)
                 self.results = result
+
+        if result is not None and self.selector and not self.multiple:
+            result = Select(result)
 
         self.element = result if result else None
         self.found = True if self.element else False
