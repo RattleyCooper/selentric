@@ -137,8 +137,8 @@ class Locator(object):
 
         :param name:
         """
+        result = self.find()
         if self.element is None:
-            result = self.find()
             if result is None:
                 raise NoSuchElementException(f"{self.name} unable to locate element by {self.by}, with locator '{self.locator}'")
         return getattr(self.element, name)
@@ -286,8 +286,8 @@ class PageTemplateMatcher(object):
         """
         if name not in self.locators:
             raise AttributeError(f'No attribute "{name}" exists on object and no key of "{name}" exists in locator dictionary.')
+        result = self.locators[name].find()
         if self.locators[name].element is None or not self.locators[name]:
-            result = self.locators[name].find()
             if result is None:
                 raise NoSuchElementException(f"{self.locators[name].name} unable to locate element by {self.locators[name].by}, with locator '{self.locators[name].locator}'")
         return self.locators[name].element
@@ -527,8 +527,8 @@ class Page(object):
         """
         if name not in self.matcher.locators:
             raise AttributeError(f'No attribute "{name}" exists on object and no key of "{name}" exists in matchers locator dictionary.')
+        result = self.matcher.locators[name].find()
         if self.matcher.locators[name].element is None or not self.matcher.locators[name]:
-            result = self.matcher.locators[name].find()
             if result is None:
                 raise NoSuchElementException(f"{self.matcher.locators[name].name} unable to locate element by {self.matcher.locators[name].by}, with locator '{self.matcher.locators[name].locator}'")
         return self.matcher.locators[name].element
