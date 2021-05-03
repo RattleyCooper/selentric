@@ -64,7 +64,7 @@ class Locator(object):
     """
     driver = None
 
-    def __init__(self, by: By = By.ID, locator: str = '', name: str = '', parent=None, multiple=False, driver=None, selector=False):
+    def __init__(self, by: By = By.ID, locator: str = '', name: str = '', parent=None, multiple=False, driver=None, selector=False, filter_func=lambda element: element):
         """
         Initialize the Locator.  Store the information about how the locator should
         locate web elements.
@@ -90,6 +90,11 @@ class Locator(object):
 
         https://selenium-python.readthedocs.io/navigating.html
 
+        Providing a filter function with the `filter_func` kwarg allows you to
+        write custom filtering functions that are ran against any Locator
+        result.  The default filter does nothing.  Return a selenium web element,
+        or a list of filtered selenium web elements.
+
         :param by:
         :param locator:
         :param name:
@@ -107,6 +112,7 @@ class Locator(object):
         self.found = False
         self.results = []
         self.selector = selector
+        self.filter = filter_func
 
     def __getattr__(self, name):
         """
@@ -194,7 +200,16 @@ class Locator(object):
 
         self.element = result if result else None
         self.found = True if self.element else False
-        return self.element
+        if self.multiple:
+            if type(self.element) == list:
+                output = []
+                for element in self.element:
+                    if self.filter(element):
+                        output.append(element)
+                self.element = output
+            return self.element
+
+        return self.filter(self.element)
 
 
 class element_is_disabled(object):
