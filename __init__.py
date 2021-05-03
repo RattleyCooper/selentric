@@ -197,6 +197,24 @@ class Locator(object):
         return self.element
 
 
+class element_is_disabled(object):
+    """
+    An expectation for checking that an element is disabled
+
+    locator - used to find the element
+    returns the WebElement once it is disabled
+    """
+    def __init__(self, locator):
+        self.locator = locator
+
+    def __call__(self, driver):
+        element = driver.find_element(*self.locator)   # Finding the referenced element
+        if element.get_attribute("disabled").strip() == 'disabled':
+            return element
+        else:
+            return False
+
+
 class PageTemplateMatcher(object):
     """
     Use this object to verify the state of a web page by checking that
@@ -301,6 +319,11 @@ class PageTemplateMatcher(object):
         """
         self._set_locator(element)
         self.expected_conditions.append((EC.presence_of_element_located, [(element.by, element.locator)]))
+        return self
+
+    def match_disabled(self, element: Locator):
+        self._set_locator(element)
+        self.expected_conditions.append((element_is_disabled, [(element.by, element.locator)]))
         return self
 
     def match_visibility(self, element: Locator):
