@@ -298,17 +298,7 @@ class PageTemplateMatcher(builtins.object):
     the template code with the automation code.
 ```
 ### `PageTemplateMatcher` Methods:
-```
-__getattr__(self, name: str):
-
-    When an attribute is accessed that does not exist, we'll check to see if the
-    template has a locator by the given attribute name.  If it does it will do
-    all the checks to see if the element exists and return that element if it
-    does exist.
- 
-    :param name:
-    :return:
-    
+```    
 __init__(self, driver=None):
 
     Initialize self.  See help(type(self)) for accurate signature.
@@ -449,6 +439,16 @@ set_driver(self, driver: selenium.webdriver.chrome.webdriver.WebDriver):
      
     :param driver:
     :return: self
+
+__getattr__(self, name: str):
+
+    When an attribute is accessed that does not exist, we'll check to see if the
+    template has a locator by the given attribute name.  If it does it will do
+    all the checks to see if the element exists and return that element if it
+    does exist.
+ 
+    :param name:
+    :return:
 
 Data and other attributes defined here:
 
