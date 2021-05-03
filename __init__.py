@@ -633,12 +633,12 @@ class Page(object):
         :param poll_frequency:
         :return:
         """
-        print('Waiting until DOM is ready.')
+        print(f'{self.__class__.__name__} - Waiting until DOM is ready.')
         sleep(1)
         WebDriverWait(self.matcher.driver, timeout, poll_frequency).until(
             lambda driver: driver.execute_script('return document.readyState') == 'complete'
         )
-        print('DOM ready.')
+        print(f'{self.__class__.__name__} - DOM ready.')
         return self
 
     def wait_for(self, element: Locator, expected_condition, timeout=5, poll_frequency=.1):
