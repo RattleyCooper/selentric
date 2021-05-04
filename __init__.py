@@ -1,3 +1,4 @@
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions as EC
@@ -514,11 +515,12 @@ class Page(object):
     objects by calling the `Page.locator` method.  This will give you the
     `Locator`, but no lookups in the DOM will be performed by selenium.
     """
-    def __init__(self, template_matcher: PageTemplateMatcher):
+    def __init__(self, template_matcher: PageTemplateMatcher, driver: WebDriver):
         """
         There must be a PageTemplateMatcher for the Page object to use.
         """
         self.matcher: PageTemplateMatcher = template_matcher
+        self.driver = driver
 
     def __getattr__(self, name):
         """
