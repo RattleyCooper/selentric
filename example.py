@@ -22,6 +22,7 @@ def main(driver):
         print(tree_frog_result.text)
     sleep(5)
 
+    # Test log in page controller.
     wiki_login.sign_in('bobabooeybobabooey', 'not-a-real-password', testing=True)
     sleep(5)
 
