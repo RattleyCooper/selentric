@@ -20,7 +20,138 @@ manually, or sync it with git.  The only dependency is the `selenium` bindings f
 
 An example script can be found in the root directory. It's named `example.py`.  There are 2 other files in the 
 `example_page_templates` and `example_page_controllers` folders that contain the `PageTemplate`s and the
-`Page` objects used in the example script.
+`Page` objects used in the example script.  Smaller versions of those examples are below:
+
+## Example `PageTemplate`
+
+```python
+from selentric import PageTemplate, Locator, By
+
+
+class WikipediaSearch(PageTemplate):
+    def __init__(self, driver):
+        super(WikipediaSearch, self).__init__(driver)
+        
+        # Define conditions that must be met.
+
+        # Part of the URL will contain the given text
+        self.match_partial_url('wikipedia.org/w/index.php?search=')
+        # The title will match the given text exactly
+        self.match_partial_title('Search')
+
+        # A web element is present with a name attribute matching "search".  This web element
+        # can be accessed with the "search_input" attribute on the `Page` object.
+        self.match_presence(Locator(By.NAME, 'search', name='search_input'))
+        # A web element is present with a class name attribute matching "oo-ui-actionFieldLayout-button".
+        # This web element can be accessed with the "search_button" attribute on the `Page` object.
+        self.match_presence(
+            Locator(By.CLASS_NAME, 'oo-ui-actionFieldLayout-button', name='search_button')
+        )
+        # A web element is present with a class name attribute matching "mw-advancedSearch-container".
+        # This web element is not interacted with by our script, so we don't need to give it a name.
+        self.match_presence(Locator(By.CLASS_NAME, 'mw-advancedSearch-container'))
+
+        # Add a locator that can still be accessed with the `Page` object, but don't use it for template matching.
+        self.add_locator(Locator(By.ID, 'pt-login', name='login_link'))
+
+        # Create Locator to use as a parent Locator so we can get search results
+        results_list_element = Locator(By.CLASS_NAME, 'mw-search-results')
+        # Use `parent` and `multiple` kwargs. The parent is found first
+        # and the resulting web element is used to find the child Locator.
+        # The multiple kwarg will make the locator find multiple web elements
+        # if they exist and a list of web elements is returned instead of a
+        # single web element.
+        self.add_locator(
+            Locator(By.TAG_NAME, 'li', name='search_results', parent=results_list_element, multiple=True)
+        )
+```
+
+## Example `Page`
+
+```python
+from selenium.webdriver.remote.webdriver import WebDriver
+from selentric import Page
+from example_page_templates import wikipedia as wiki_templates
+
+
+class WikipediaSearch(Page):  # Inherit from `Page`
+    def __init__(self, driver: WebDriver):
+        # Create a template that can evaluate the given conditions
+        template: wiki_templates.WikipediaSearch = wiki_templates.WikipediaSearch(driver)
+
+        self.search_url = 'https://en.wikipedia.org/w/index.php?search=&title=Special%3ASearch&go=Go'
+        driver.get(self.search_url)
+        # initialize the parent class and pass the template as input.
+        super(WikipediaSearch, self).__init__(template, driver)
+
+    def search(self, text: str):
+        # Navigate to wiki search page if current url indicates we are
+        # not on the search page.
+        if self.search_url not in self.driver.current_url:
+            self.driver.get(self.search_url)
+
+        # Wait until the current web page matches the WikipediaSearch template
+        # defined in example_page_templates folder.
+        self.wait_for_match()
+        # Wait until the document.readyState == 'complete'
+        self.wait_until_ready()
+
+        # Use the search_input Locator to find the search_input
+        # web element using selenium and send keystrokes to the input.
+        # Remember that you can treat the web elements as if they
+        # already exist.  You don't need to call any functions, just
+        # access them by using the name you gave to the Locator in
+        # the PageTemplate
+        self.search_input.clear()  # Make sure the search input box is empty
+        self.search_input.send_keys(text)  # Fill in search text
+
+        # Click the search button and wait for results to load.
+        self.search_button.click()
+
+        # Wait until web page matches WikipediaSearch template
+        # and then wait until the document readyState == 'complete'
+        self.wait_until_match_and_ready()
+
+        return self.search_results
+```
+
+## Tying it all together
+
+```python
+from selenium.webdriver import Chrome
+from time import sleep
+from example_page_controllers import wikipedia
+from selentric import Locator
+
+
+def main(driver):
+    # Create instance of the `Page` object from example above.
+    wiki_search = wikipedia.WikipediaSearch(driver)
+
+    # Search for Red Pandas
+    red_panda_results = wiki_search.search("Red Panda")
+    # Go through the list of red panda results and print the text
+    # from the selenium web element.
+    for red_panda_result in red_panda_results:
+        print(red_panda_result.text)
+    sleep(5)
+
+    # Search for Tree Frogs
+    tree_frog_results = wiki_search.search("Tree Frog")
+    for tree_frog_result in tree_frog_results:
+        print(tree_frog_result.text)
+    sleep(5)
+
+_driver = Chrome("C:/chromedriver.exe")
+Locator.driver = _driver
+
+try:
+    main(_driver)
+finally:
+    print('Closing/Quitting web driver!')
+    _driver.close()
+    _driver.quit()
+```
 
 ## Selentric Class Objects
 
