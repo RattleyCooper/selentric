@@ -323,6 +323,8 @@ class PageTemplateMatcher(object):
         element_name = element.name if element.name else new_id
         setattr(self, element_name, element)
         self.locators[element_name] = element
+        if element.driver is None:
+            element.driver = self.driver
 
     def match_presence(self, element: Locator):
         """
