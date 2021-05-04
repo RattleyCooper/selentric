@@ -30,7 +30,7 @@ class WikipediaSearch(Page):  # Inherit from `Page`
         # Remember that you can treat the web elements as if they
         # already exist.  You don't need to call any functions, just
         # access them by using the name you gave to the Locator in
-        # the PageTemplateMatcher
+        # the PageTemplate
         self.search_input.clear()  # Make sure the search input box is empty
         self.search_input.send_keys(text)  # Fill in search text
 

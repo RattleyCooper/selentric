@@ -1,7 +1,7 @@
-from selentric import PageTemplateMatcher, Locator, By
+from selentric import PageTemplate, Locator, By
 
 
-class WikipediaSearch(PageTemplateMatcher):
+class WikipediaSearch(PageTemplate):
     def __init__(self, driver):
         super(WikipediaSearch, self).__init__(driver)
         
@@ -39,7 +39,7 @@ class WikipediaSearch(PageTemplateMatcher):
         )
 
 
-class WikipediaSignIn(PageTemplateMatcher):
+class WikipediaSignIn(PageTemplate):
     def __init__(self, driver):
         super(WikipediaSignIn, self).__init__(driver)
         

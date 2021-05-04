@@ -6,7 +6,7 @@ controls the automation, and the code that finds the web elements.  Selenium alr
 on that a bit and brings a little more to the table.
 
 In the future there will also be tools available for logging the source code of the web pages you need to automate.  Once 
-you have the source files you can run them through a tool to generate `Page`/`PageTemplateMatcher`/`Locator` objects using 
+you have the source files you can run them through a tool to generate `Page`/`PageTemplate`/`Locator` objects using 
 unique class names, tag names, ids, names, etc.  These tools will require `BeautifulSoup4`.  They are not complete yet.  
 Once it's done, I'm fairly certain it will make the process of setting up unique page templates a lot quicker, but like 
 I said, it's not done yet.
@@ -19,7 +19,7 @@ manually, or sync it with git.  The only dependency is the `selenium` bindings f
 ## Usage
 
 An example script can be found in the root directory. It's named `example.py`.  There are 2 other files in the 
-`example_page_templates` and `example_page_controllers` folders that contain the `PageTemplateMatcher`s and the
+`example_page_templates` and `example_page_controllers` folders that contain the `PageTemplate`s and the
 `Page` objects used in the example script.
 
 ## Selentric Class Objects
@@ -36,7 +36,7 @@ class Locator(builtins.object):
     the `find` method is called, or you try to use a method, or access
     an attribute that is on a selenium web element object.
  
-    This object supports page template matching with the `PageTemplateMatcher`
+    This object supports page template matching with the `PageTemplate`
      
     When an element is located successfully, a copy of the selenium
     element object is stored and you can call any of it's methods
@@ -145,10 +145,10 @@ Data and other attributes defined here:
     driver: selenium.webdriver.chrome.webdriver.WebDriver = None
 ```
 
-## `PageTemplateMatcher`
+## `PageTemplate`
 ```
-class PageTemplateMatcher(builtins.object):
-  PageTemplateMatcher(driver: selenium.webdriver.chrome.webdriver.WebDriver = None):
+class PageTemplate(builtins.object):
+  PageTemplate(driver: selenium.webdriver.chrome.webdriver.WebDriver = None):
  
     Use this object to verify the state of a web page by checking that
     all the given expected conditions have been met.
@@ -164,7 +164,7 @@ class PageTemplateMatcher(builtins.object):
         driver.get('https://google.com/')
         input_locator = Locator('search-input', driver, by=By.NAME, locator='q')
      
-        google_matcher = PageTemplateMatcher(driver)
+        google_matcher = PageTemplate(driver)
         google_matcher.match_url('https://google.com/')
         google_matcher.match_title('Google')
         google_matcher.match_presence(input_locator)
@@ -175,7 +175,7 @@ class PageTemplateMatcher(builtins.object):
     Note that this example is somewhat incomplete, as you wouldn't normally intermix
     the template code with the automation code.
 ```
-### `PageTemplateMatcher` Methods:
+### `PageTemplate` Methods:
 ```    
 __init__(self, driver=None):
 
@@ -338,11 +338,11 @@ Data and other attributes defined here:
 class Page(builtins.object):
  
     This object provides a multitude of helper methods that are great for your
-    controller code.  You give it a `PageTemplateMatcher` and then you can do
+    controller code.  You give it a `PageTemplate` and then you can do
     things like wait for the web page to match the given template matcher, or
     locate the selenium window handle that matches the given template.
      
-    You can directly access attributes of the given `PageTemplateMatcher` and
+    You can directly access attributes of the given `PageTemplate` and
     in turn, get access to all of it's `Locator` objects.  If you need to
     use a `Locator` directly, you can bypass the automatic nature of selentric
     objects by calling the `Page.locator` method.  This will give you the
@@ -350,14 +350,14 @@ class Page(builtins.object):
 ```
 ### `Page` Methods:
 ```
-__init__(self, template_matcher: selentric.PageTemplateMatcher):
+__init__(self, template_matcher: selentric.PageTemplate):
 
-    There must be a PageTemplateMatcher for the Page object to use.
+    There must be a PageTemplate for the Page object to use.
 
 locate_window(self, timeout: int = -1):
 
     Locate the correct window by cycling through the window handles and
-    running the `PageTemplateMatcher` to confirm the correct window
+    running the `PageTemplate` to confirm the correct window
     handle is currently selected.
      
     Set `timeout` to something other than -1 if you don't want it
@@ -376,8 +376,8 @@ locator(self, locator_name: str):
 
 matches(self, debug: bool = False, timeout: float = 0.01):
 
-    Use this `Page`'s `PageTemplateMatcher` to check that the current web
-    page matches the `PageTemplateMatcher`.
+    Use this `Page`'s `PageTemplate` to check that the current web
+    page matches the `PageTemplate`.
      
     :param debug:
     :param timeout:
@@ -398,7 +398,7 @@ wait_for(self, element: selentric.Locator, expected_condition, timeout: int = 5,
 
 wait_for_match(self, poll_frequency: float = 0.1, timeout: int = -1):
     Wait until the current window handle's web page matches the template
-    defined in the PageTemplateMatcher that this object uses.
+    defined in the PageTemplate that this object uses.
      
     Set timeout to something other than -1 or it will wait forever.
      
@@ -408,7 +408,7 @@ wait_for_match(self, poll_frequency: float = 0.1, timeout: int = -1):
 
 wait_for_no_match(self, poll_frequency: float = 0.1, timeout: int = -1):
     Wait until the current window handle's web page DOES NOT match the
-    template defined in the PageTemplateMatcher that this object uses.
+    template defined in the PageTemplate that this object uses.
  
     Set timeout to something other than -1 or it will wait forever.
      
@@ -426,7 +426,7 @@ wait_until_ready(self, timeout: int = 60, poll_frequency: float = 0.5):
 
 __getattr__(self, name: str):
 
-    This enables the automatic access to Locators held in the PageTemplateMatcher
+    This enables the automatic access to Locators held in the PageTemplate
  
     :param name:
     :return: Locator

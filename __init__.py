@@ -41,7 +41,7 @@ class Locator(object):
     the `find` method is called, or you try to use a method, or access
     an attribute that is on a selenium web element object.
 
-    This object supports page template matching with the `PageTemplateMatcher`
+    This object supports page template matching with the `PageTemplate`
 
     When an element is located successfully, a copy of the selenium
     element object is stored and you can call any of it's methods
@@ -231,7 +231,7 @@ class element_is_disabled(object):
             return False
 
 
-class PageTemplateMatcher(object):
+class PageTemplate(object):
     """
     Use this object to verify the state of a web page by checking that
     all the given expected conditions have been met.
@@ -246,7 +246,7 @@ class PageTemplateMatcher(object):
         driver.get('https://google.com/')
         input_locator = Locator('search-input', driver, by=By.NAME, locator='q')
 
-        google_matcher = PageTemplateMatcher(driver)
+        google_matcher = PageTemplate(driver)
         google_matcher.match_url('https://google.com/')
         google_matcher.match_title('Google')
         google_matcher.match_presence(input_locator)
@@ -272,7 +272,7 @@ class PageTemplateMatcher(object):
         :param driver:
         :return:
         """
-        PageTemplateMatcher.driver = driver
+        PageTemplate.driver = driver
         return self
 
     def __getattr__(self, name):
@@ -505,26 +505,26 @@ class PageTemplateMatcher(object):
 class Page(object):
     """
     This object provides a multitude of helper methods that are great for your
-    controller code.  You give it a `PageTemplateMatcher` and then you can do
+    controller code.  You give it a `PageTemplate` and then you can do
     things like wait for the web page to match the given template matcher, or
     locate the selenium window handle that matches the given template.
 
-    You can directly access attributes of the given `PageTemplateMatcher` and
+    You can directly access attributes of the given `PageTemplate` and
     in turn, get access to all of it's `Locator` objects.  If you need to
     use a `Locator` directly, you can bypass the automatic nature of selentric
     objects by calling the `Page.locator` method.  This will give you the
     `Locator`, but no lookups in the DOM will be performed by selenium.
     """
-    def __init__(self, template_matcher: PageTemplateMatcher, driver: WebDriver):
+    def __init__(self, template_matcher: PageTemplate, driver: WebDriver):
         """
-        There must be a PageTemplateMatcher for the Page object to use.
+        There must be a PageTemplate for the Page object to use.
         """
-        self.matcher: PageTemplateMatcher = template_matcher
+        self.matcher: PageTemplate = template_matcher
         self.driver = driver
 
     def __getattr__(self, name):
         """
-        This enabled the automatic access to Locators held in the PageTemplateMatcher
+        This enabled the automatic access to Locators held in the PageTemplate
 
         :param name:
         :return:
@@ -550,7 +550,7 @@ class Page(object):
     def locate_window(self, timeout=-1, poll_frequency=.5):
         """
         Locate the correct window by cycling through the window handles and
-        running the `PageTemplateMatcher` to confirm the correct window
+        running the `PageTemplate` to confirm the correct window
         handle is currently selected.
 
         Set `timeout` to something other than -1 if you don't want it
@@ -573,8 +573,8 @@ class Page(object):
 
     def matches(self, debug=False, timeout=.01):
         """
-        Use this `Page`'s `PageTemplateMatcher` to check that the current web
-        page matches the `PageTemplateMatcher`.
+        Use this `Page`'s `PageTemplate` to check that the current web
+        page matches the `PageTemplate`.
 
         :param debug:
         :return:
@@ -594,7 +594,7 @@ class Page(object):
     def wait_for_match(self, poll_frequency=.1, timeout=-1):
         """
         Wait until the current window handle's web page matches the template
-        defined in the PageTemplateMatcher that this object uses.
+        defined in the PageTemplate that this object uses.
 
         Set timeout to something other than -1 or it will wait forever.
 
@@ -618,7 +618,7 @@ class Page(object):
     def wait_for_no_match(self, poll_frequency=.1, timeout=-1):
         """
         Wait until the current window handle's web page DOES NOT match the
-        template defined in the PageTemplateMatcher that this object uses.
+        template defined in the PageTemplate that this object uses.
 
         Set timeout to something other than -1 or it will wait forever.
 
