@@ -24,7 +24,7 @@ class WikipediaSearch(PageTemplateMatcher):
         # This web element is not interacted with by our script, so we don't need to give it a name.
         self.match_presence(Locator(By.CLASS_NAME, 'mw-advancedSearch-container'))
 
-        # Add a locator that can still be accessed with the `Page` object, but don't use it for template matching,
+        # Add a locator that can still be accessed with the `Page` object, but don't use it for template matching.
         self.add_locator(Locator(By.ID, 'pt-login', name='login_link'))
 
         # Create Locator to use as a parent Locator so we can get search results
