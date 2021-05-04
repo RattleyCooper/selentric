@@ -11,12 +11,12 @@ unique class names, tag names, ids, names, etc.  These tools will require `Beaut
 Once it's done, I'm fairly certain it will make the process of setting up unique page templates a lot quicker, but like 
 I said, it's not done yet.
 
-### Install
+## Install
 
 This package is brand new and there is not an official way to install the package yet.  Download the .zip and install 
 manually, or sync it with git.  The only dependency is the `selenium` bindings for python.
 
-### Usage
+## Usage
 
 An example script can be found in the root directory. It's named `example.py`.  There are 2 other files in the 
 `example_page_templates` and `example_page_controllers` folders that contain the `PageTemplateMatcher`s and the
