@@ -610,6 +610,11 @@ class Page(object):
         print(f'Page matches {self.__class__.__name__}!')
         return self
 
+    def wait_until_match_and_ready(self, *args, **kwargs):
+        self.wait_for_match(*args, **kwargs)
+        self.wait_until_ready(*args, **kwargs)
+        return self
+
     def wait_for_no_match(self, poll_frequency=.1, timeout=-1):
         """
         Wait until the current window handle's web page DOES NOT match the
