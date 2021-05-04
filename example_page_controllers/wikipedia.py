@@ -14,25 +14,32 @@ class WikipediaSearch(Page):  # Inherit from `Page`
         super(WikipediaSearch, self).__init__(template, driver)
 
     def search(self, text: str):
+        # Navigate to wiki search page if current url indicates we are
+        # not on the search page.
         if self.search_url not in self.driver.current_url:
             self.driver.get(self.search_url)
+
         # Wait until the current web page matches the WikipediaSearch template
         # defined in example_page_templates folder.
         self.wait_for_match()
-        self.wait_until_ready()  # Wait until the document.readyState == 'complete'
+        # Wait until the document.readyState == 'complete'
+        self.wait_until_ready()
 
         # Use the search_input Locator to find the search_input
-        # web element using selenium and send keystrokes.
-        # Remember that you can treat the web element
-        # as if they already exist.  You don't need to
-        # call any functions to look anything up.
+        # web element using selenium and send keystrokes to the input.
+        # Remember that you can treat the web elements as if they
+        # already exist.  You don't need to call any functions, just
+        # access them by using the name you gave to the Locator in
+        # the PageTemplateMatcher
         self.search_input.clear()  # Make sure the search input box is empty
-        self.search_input.send_keys(text)
+        self.search_input.send_keys(text)  # Fill in search text
 
         # Click the search button and wait for results to load.
         self.search_button.click()
-        self.wait_until_ready()  # Wait for document ready state.
-        self.wait_for_match()  # Wait until web page matches WikipediaSearch template.
+
+        # Wait until web page matches WikipediaSearch template
+        # and then wait until the document readyState == 'complete'
+        self.wait_until_match_and_ready()
 
         return self.search_results
 
