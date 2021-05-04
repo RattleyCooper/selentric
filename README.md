@@ -25,7 +25,8 @@ a template to use, we can give that template to the `Page` object, which provide
 while cutting down on overly-verbose selenium code.  To do this we need to import the `PageTemplateMatcher`,`Locator`, 
 `Page`, and `By` objects.  The example below is fairly comprehensive and is documented pretty well, although this example
 does not show all of the available methods. It shows how to set up a custom `Page` object with a `PageTemplateMatcher`.  
-The controller portion of the code is in the `if __name__ == "__main__":` block.
+The controller portion of the code is in the `if __name__ == "__main__":` block.  For a more complete example check out
+the `example.py` file.
 
 ```python
 # Selentric imports `By` from selenium, so it's the same object.
