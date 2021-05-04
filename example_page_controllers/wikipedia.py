@@ -1,19 +1,19 @@
+from selenium.webdriver.remote.webdriver import WebDriver
 from selentric import Page
 from example_page_templates import wikipedia as wiki_templates
 
 
 class WikipediaSearch(Page):  # Inherit from `Page`
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         # Create a template that can evaluate the given conditions
         template: wiki_templates.WikipediaSearch = wiki_templates.WikipediaSearch(driver)
 
         self.search_url = 'https://en.wikipedia.org/w/index.php?search=&title=Special%3ASearch&go=Go'
         driver.get(self.search_url)
-        self.driver = driver
         # initialize the parent class and pass the template as input.
-        super(WikipediaSearch, self).__init__(template)
+        super(WikipediaSearch, self).__init__(template, driver)
 
-    def search(self, text):
+    def search(self, text: str):
         if self.search_url not in self.driver.current_url:
             self.driver.get(self.search_url)
         # Wait until the current web page matches the WikipediaSearch template
@@ -38,15 +38,13 @@ class WikipediaSearch(Page):  # Inherit from `Page`
 
 
 class WikipediaSignIn(Page):
-    def __init__(self, driver):
+    def __init__(self, driver: WebDriver):
         # Use template created in example_page_templates folder.
         template: wiki_templates.WikipediaSignIn = wiki_templates.WikipediaSignIn(driver)
-        self.driver = driver
-
         # initialize the parent class and pass the template as input.
-        super(WikipediaSignIn, self).__init__(template)
+        super(WikipediaSignIn, self).__init__(template, driver)
 
-    def sign_in(self, username, password, testing=False):
+    def sign_in(self, username: str, password: str, testing=False):
         self.driver.get('https://en.wikipedia.org/w/index.php?title=Special:UserLogin&returnto=Special%3ASearch&returntoquery=search%3Dred%2Bpanda%26profile%3Dadvanced%26fulltext%3D1%26ns0%3D1')
         self.wait_until_ready()
         self.wait_for_match()
