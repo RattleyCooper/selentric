@@ -5,3 +5,4 @@ common.py
 __pycache*
 examples*
 debug.py
+gui.py
