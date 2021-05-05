@@ -14,7 +14,13 @@ I said, it's not done yet.
 ## Install
 
 This package is brand new and there is not an official way to install the package yet.  Download the .zip and install 
-manually, or sync it with git.  The only dependency is the `selenium` bindings for python.
+manually, or sync it with git.  The only dependency is the `selenium` bindings for python.  Syncing with git is probably
+the best bet at this moment in time, as this project will be changing fairly consistently.
+
+## Request Features
+
+Just open an issue if there is something selentric doesn't currently do, but you think that it should.  Give plenty
+of details and provide example syntax for how you think the objects should behave, etc.
 
 ## Usage
 
