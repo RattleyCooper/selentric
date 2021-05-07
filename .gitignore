@@ -6,3 +6,4 @@ __pycache*
 examples*
 debug.py
 gui.py
+gui*
